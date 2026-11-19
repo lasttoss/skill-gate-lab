@@ -35,6 +35,15 @@ A skill without a **stop condition** and a **failure-mode** section is a prompt 
 filename: an agent will follow it straight past the point where it should have handed back to a
 human. Tier 1 treats those two sections as required, not decorative.
 
+## Where a broken skill gets caught
+
+![Three tiers in sequence: catalog, tier 1 structure, tier 2 routing, tier 3 behaviour, then one row per step](docs/figures/three-tier-gate.png)
+
+**Figure 1.** Each stage is cheaper than the one after it, so the stage that spends tokens only ever
+sees workflows that already passed the free ones. The inset is one real failed row from the smoke
+run, not a summary. Source: [`docs/figures/three-tier-gate.html`](docs/figures/three-tier-gate.html)
+— self-contained SVG, no remote assets.
+
 ## Quickstart (no API key, no network)
 
 ```bash
