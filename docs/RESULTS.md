@@ -12,6 +12,7 @@ no network, no API key. Reproduce with `make gate && make smoke`.
 | Workflows | 1 (`coding-flow`, 3 steps) |
 | Units checked | 11 |
 | Findings | 0 |
+| Routing checks | 22 (15 positive prompts, 7 negative) |
 | Routing rank-1 rate | 100.0% (floor 100.0%) |
 | Wall clock, `make gate` | 0.03 s |
 

@@ -9,8 +9,9 @@ It answers one question with a number instead of an opinion:
 
 ## Result in three lines
 
-- **Tier 1 + tier 2 run in 0.03 s, offline, with no API key**: 5 skills, 5 case files, one 3-step
-  workflow, 11 units checked, routing rank-1 **100%** (107 checks' worth of structure behind it).
+- **Tier 1 + tier 2 run in 0.03 s, offline, with no API key**: 5 skills, 5 case files, 22 routing
+  checks (15 positive prompts, 7 negative), one 3-step workflow, 11 units checked, routing rank-1
+  **100%** against a committed floor of 100%.
 - **Tier 3 records one row per step**, not one score per workflow: 18 rows for 3 inputs × 2 runs ×
   3 steps, showing `reproduce` at **66.7%** while `review` and `notes` sit at 100% — the number that
   tells you where to look.
