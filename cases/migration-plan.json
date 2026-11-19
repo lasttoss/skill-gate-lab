@@ -1,0 +1,13 @@
+{
+  "skill_name": "migration-plan",
+  "trigger": {
+    "positive": [
+      {"prompt": "Plan the schema migration and the rollback for each phase", "top_k": 2},
+      {"prompt": "We must upgrade this runtime before the support deadline; plan it", "top_k": 2},
+      {"prompt": "How long does this breaking change take and what is the rollback", "top_k": 2}
+    ],
+    "negative": [
+      {"prompt": "Reproduce the reported bug as a failing test"}
+    ]
+  }
+}

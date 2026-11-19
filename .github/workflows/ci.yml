@@ -1,0 +1,58 @@
+# Trigger model, tiered by cost. The free tiers run on every push because they cost
+# nothing; the paid tier runs on a schedule or by hand, never on a random commit.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 2 * * 1"        # weekly paid run, Monday 02:00 UTC
+  workflow_dispatch:
+    inputs:
+      tier3:
+        description: "Run tier 3 (costs tokens)"
+        type: boolean
+        default: false
+
+jobs:
+  free:
+    name: tier 1 + 2 (no network, no key)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: make test
+      - run: make gate
+      - run: make smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: out/report.html
+
+  container:
+    name: same gate, in the image that ships
+    runs-on: ubuntu-latest
+    needs: free
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/compose_smoke.sh
+
+  paid:
+    name: tier 3 (costs tokens)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.tier3)
+    runs-on: ubuntu-latest
+    needs: free
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: make run EXECUTOR_CMD="${{ secrets.EXECUTOR_CMD }}"
+        if: secrets.EXECUTOR_CMD != ''
+      - run: make run
+        if: secrets.EXECUTOR_CMD == ''
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tier3-report
+          path: out/report.html

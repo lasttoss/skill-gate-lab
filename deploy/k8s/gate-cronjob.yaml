@@ -1,0 +1,32 @@
+# The trigger model, expressed as a schedule instead of a habit.
+#
+#   every 15 min  -> the two free tiers. Cheap enough that nobody wants to turn it off.
+#   weekly        -> tier 3 against a real model, with the key from a Secret.
+#
+# The weekly job is not there to catch a changed skill. It is there to catch the
+# ground moving: providers update models and defaults without telling anyone, and a
+# score that drops with no commit is the most valuable finding this system produces.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: skill-gate-free
+  labels:
+    app.kubernetes.io/name: skill-gate-lab
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: gate
+              image: ghcr.io/lasttoss/skill-gate-lab:0.1.0
+              args: ["gate"]
+              resources:
+                requests: {cpu: 50m, memory: 64Mi}
+                limits: {cpu: 500m, memory: 256Mi}

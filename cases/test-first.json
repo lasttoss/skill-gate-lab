@@ -1,0 +1,14 @@
+{
+  "skill_name": "test-first",
+  "trigger": {
+    "positive": [
+      {"prompt": "A bug was reported, reproduce it as a failing test first", "top_k": 2},
+      {"prompt": "Write a failing test that reproduces this bug before the fix", "top_k": 2},
+      {"prompt": "I need a regression guard for the bug we just fixed", "top_k": 2}
+    ],
+    "negative": [
+      {"prompt": "Plan the schema upgrade risk and what we will not upgrade"},
+      {"prompt": "Review this diff and give a merge verdict"}
+    ]
+  }
+}

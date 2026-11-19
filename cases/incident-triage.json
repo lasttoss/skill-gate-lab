@@ -1,0 +1,13 @@
+{
+  "skill_name": "incident-triage",
+  "trigger": {
+    "positive": [
+      {"prompt": "The pager fired: triage this incident into severity and owner", "top_k": 2},
+      {"prompt": "We have an outage alert; mitigate first and keep one timeline", "top_k": 2},
+      {"prompt": "Assign severity to this production alert before diagnosis", "top_k": 2}
+    ],
+    "negative": [
+      {"prompt": "Write the release notes for the integrator audience"}
+    ]
+  }
+}

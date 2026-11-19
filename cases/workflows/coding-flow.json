@@ -1,0 +1,35 @@
+{
+  "name": "coding-flow",
+  "steps": [
+    {
+      "id": "reproduce",
+      "skill": "test-first",
+      "trigger": "A bug was reported, reproduce it as a failing test first",
+      "needs": {},
+      "writes": {"failing_test": ["test_name", "assertion"]},
+      "token_budget": 400,
+      "expect": {"must_contain": ["bug"]}
+    },
+    {
+      "id": "review",
+      "skill": "code-review",
+      "trigger": "Review this diff before merge and label findings by severity",
+      "needs": {"failing_test": ["test_name"]},
+      "writes": {"review_report": ["verdict", "findings"]},
+      "expect": {"must_contain": ["review"]}
+    },
+    {
+      "id": "notes",
+      "skill": "release-notes",
+      "trigger": "Write the changelog for this release grouped by audience",
+      "needs": {"review_report": ["verdict"]},
+      "writes": {"changelog": ["shipped", "excluded"]},
+      "expect": {"must_contain": ["changelog", "release"]}
+    }
+  ],
+  "inputs": [
+    {"id": "bug-cart-empty", "prompt": "Cart total returns 0 when the cart is empty, the bug is in totalForCart", "files": ["bug-cart-empty.md"]},
+    {"id": "bug-orders-page", "prompt": "Order paging returns one row fewer than the page size, the bug is in pageOrders", "files": ["bug-orders-page.md"]},
+    {"id": "bug-huge-log", "prompt": "Log dump attached, the bug reproduces only under load and the trace is long", "files": ["huge-log.txt"]}
+  ]
+}

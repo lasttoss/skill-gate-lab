@@ -1,0 +1,13 @@
+{
+  "skill_name": "release-notes",
+  "trigger": {
+    "positive": [
+      {"prompt": "Write the changelog for this release grouped by audience", "top_k": 2},
+      {"prompt": "Draft the release notes: what shipped for the end user", "top_k": 2},
+      {"prompt": "Which merged changes belong in the changelog and which do not", "top_k": 2}
+    ],
+    "negative": [
+      {"prompt": "Triage the alert into severity and an owner"}
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "skill_name": "code-review",
+  "trigger": {
+    "positive": [
+      {"prompt": "Review this diff before I merge it", "top_k": 2},
+      {"prompt": "Do a quality review of the diff and label findings by severity", "top_k": 2},
+      {"prompt": "Someone else wrote this diff; can you review it before merge", "top_k": 2}
+    ],
+    "negative": [
+      {"prompt": "The pager fired and the outage is ongoing, who owns it"},
+      {"prompt": "Write the changelog for this release for the integrator audience"}
+    ]
+  }
+}

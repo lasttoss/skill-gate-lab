@@ -1,0 +1,38 @@
+# Two services, because the two cost tiers have two different owners:
+#   gate   — free, deterministic, safe to run on every commit
+#   run    — spends money against a real model; profiles gate it off by default
+#
+#   docker compose -f deploy/compose/docker-compose.yml run --rm gate
+#   docker compose -f deploy/compose/docker-compose.yml --profile paid run --rm run
+services:
+  gate:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    command: ["gate"]
+    volumes:
+      - ../../out:/app/out
+    restart: "no"
+
+  smoke:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    command: ["smoke"]
+    volumes:
+      - ../../out:/app/out
+    restart: "no"
+
+  run:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    # The executor is a shell command, so any provider CLI fits without changing
+    # the image. In CI the key comes from a secret, never from the image.
+    command: ["run", "--workflow", "coding-flow", "--runs", "3", "--executor-cmd", "${EXECUTOR_CMD:-cat}"]
+    environment:
+      - MODEL_API_KEY=${MODEL_API_KEY:-}
+    volumes:
+      - ../../out:/app/out
+    profiles: ["paid"]
+    restart: "no"

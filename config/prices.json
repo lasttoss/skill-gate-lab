@@ -1,0 +1,4 @@
+{
+  "default": {"in_per_mtok": 0.15, "out_per_mtok": 0.60},
+  "replay-1": {"in_per_mtok": 0.15, "out_per_mtok": 0.60}
+}

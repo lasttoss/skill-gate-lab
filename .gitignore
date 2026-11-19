@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+out/
+node_modules/
+console/dist/
+.env
+console/public/report.json
