@@ -10,6 +10,7 @@ services:
       context: ../..
       dockerfile: Dockerfile
     command: ["gate"]
+    user: "1000:1000"
     volumes:
       - ../../out:/app/out
     restart: "no"
@@ -19,6 +20,7 @@ services:
       context: ../..
       dockerfile: Dockerfile
     command: ["smoke"]
+    user: "1000:1000"
     volumes:
       - ../../out:/app/out
     restart: "no"
@@ -34,5 +36,6 @@ services:
       - MODEL_API_KEY=${MODEL_API_KEY:-}
     volumes:
       - ../../out:/app/out
+    user: "1000:1000"
     profiles: ["paid"]
     restart: "no"

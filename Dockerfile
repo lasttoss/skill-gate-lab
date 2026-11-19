@@ -10,6 +10,11 @@ COPY fixtures ./fixtures
 COPY config ./config
 COPY Makefile ./
 
+# Non-root on purpose: the container writes into a bind-mounted out/ and into a PVC,
+# and a root-owned run directory on the host is a bug that costs an hour to diagnose.
+RUN useradd --uid 1000 --create-home app && chown -R app:app /app
+USER app
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
