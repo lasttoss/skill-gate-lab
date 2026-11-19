@@ -48,10 +48,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
-      - run: make run EXECUTOR_CMD="${{ secrets.EXECUTOR_CMD }}"
-        if: secrets.EXECUTOR_CMD != ''
+      # `secrets` is not available in an `if:` expression, so the fallback lives in
+      # the shell: an empty EXECUTOR_CMD means the deterministic replay executor.
       - run: make run
-        if: secrets.EXECUTOR_CMD == ''
+        env:
+          EXECUTOR_CMD: ${{ secrets.EXECUTOR_CMD }}
       - uses: actions/upload-artifact@v4
         with:
           name: tier3-report
