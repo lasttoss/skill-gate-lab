@@ -63,7 +63,13 @@ class JudgeTest(unittest.TestCase):
 
 class RunTest(unittest.TestCase):
     def test_smoke_run_shape(self):
-        result = tier3.run(ROOT, _flow(), tier3.ReplayExecutor(tier3.load_prices(ROOT)), runs=2)
+        import tempfile
+        with tempfile.TemporaryDirectory() as out_dir:
+            result = tier3.run(ROOT, _flow(), tier3.ReplayExecutor(tier3.load_prices(ROOT)),
+                               runs=2, out_dir=out_dir)
+            self._assert_shape(result)
+
+    def _assert_shape(self, result):
         summary = result["summary"]
         self.assertEqual(summary["rows"], 18)          # 3 inputs x 2 runs x 3 steps
         self.assertEqual(summary["runs_per_input"], 2)

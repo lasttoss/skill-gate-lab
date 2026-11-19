@@ -105,6 +105,8 @@ is the most valuable finding this system produces.
 ```bash
 make compose                              # runs the gate in the image that ships
 make run EXECUTOR_CMD='your-model-cli'    # tier 3 against any CLI: prompt on stdin, answer on stdout
+MODEL_API_KEY=... make run EXECUTOR_CMD='python3 scripts/model_executor.py'   # bundled OpenAI-compatible executor
+make report                               # re-render the last run, free
 ```
 
 ## Console
@@ -122,7 +124,10 @@ cd console && npm install && npm run dev
 
 - The bundled **replay executor is not a model.** It is deterministic on purpose: it proves the
   pipeline end to end — step log, reason codes, cost accounting, stability — and it measures the
-  *harness*, not anybody's skill quality. `tier3.py` says so at the top.
+  *harness*, not anybody's skill quality. `tier3.py` says so at the top. Tier 3 **has** been run
+  against a real model (`deepseek-v4.1-flash`, 27 calls, $0.0079, p95 3.1 s): 88.9% on this
+  workflow, and its first run scored 37.0% because two of the assertions were wrong — see
+  [`docs/RESULTS.md`](docs/RESULTS.md), which records both runs.
 - **Tier 2 is lexical.** Stemmed TF-IDF over descriptions cannot judge semantics. It catches two
   real bugs — a description missing the words users say, and an over-broad description that
   outranks the right skill — and it also produced two findings on this repo's own catalog while it
@@ -141,7 +146,7 @@ cases/       routing cases per skill + cases/workflows/coding-flow.json
 fixtures/    step inputs — the bytes, not a description of them
 config/      prices.json · routing-baseline.json (the routing floor)
 deploy/      compose + k8s cronjobs, one per cost tier
-scripts/     compose_smoke.sh
+scripts/     compose_smoke.sh · model_executor.py (real tier 3, env-only key)
 tests/       35 unit tests
 docs/        RESULTS.md
 ```

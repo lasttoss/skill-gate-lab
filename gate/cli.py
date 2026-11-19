@@ -129,6 +129,40 @@ def cmd_run(args) -> int:
     return 0
 
 
+def cmd_report(args) -> int:
+    """Rebuild the report from the newest recorded run, without spending anything.
+
+    A run costs tokens; reading its rows does not. Keeping these two separate is why
+    a paid run is worth running at all — you can re-render it a hundred times.
+    """
+    root = _root()
+    runs_dir = os.path.join(root, tier3.RUNS_DIR)
+    candidates = sorted(
+        (os.path.join(runs_dir, name) for name in os.listdir(runs_dir)
+         if os.path.isfile(os.path.join(runs_dir, name, "run.json"))),
+        key=os.path.getmtime,
+    ) if os.path.isdir(runs_dir) else []
+    if not candidates:
+        print("no recorded run under out/runs — run `make smoke` or `make run` first")
+        return 1
+    run_dir = candidates[-1]
+    with open(os.path.join(run_dir, "run.json"), encoding="utf-8") as handle:
+        recorded = json.load(handle)
+    with open(os.path.join(run_dir, "steps.jsonl"), encoding="utf-8") as handle:
+        rows = [json.loads(line) for line in handle if line.strip()]
+    summary = dict(recorded["summary"])
+    summary["failures"] = [row for row in rows if row["status"] != "passed"]
+
+    docs, _ = tier1.load_catalog(root)
+    document = report.to_json(tier1.run(root), tier2.run(root, docs), summary,
+                              _read_baseline(root))
+    json_path, html_path = report.write(root, document)
+    print(f"--- report from {os.path.basename(run_dir)} "
+          f"({recorded['executor']} · {summary['rows']} rows · pass {summary['pass_rate']}%)")
+    print(f"    {os.path.relpath(html_path, root)} · {os.path.relpath(json_path, root)}")
+    return 0
+
+
 def cmd_smoke(args) -> int:
     code = cmd_gate(args)
     root = _root()
@@ -170,6 +204,9 @@ def main(argv=None) -> int:
     run.add_argument("--executor-cmd", default="")
     run.add_argument("--timeout", type=float, default=120.0)
     run.set_defaults(func=cmd_run)
+
+    report_cmd = sub.add_parser("report")
+    report_cmd.set_defaults(func=cmd_report)
 
     smoke = sub.add_parser("smoke")
     smoke.add_argument("--workflow", default="coding-flow")

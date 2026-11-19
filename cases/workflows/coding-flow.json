@@ -7,8 +7,8 @@
       "trigger": "A bug was reported, reproduce it as a failing test first",
       "needs": {},
       "writes": {"failing_test": ["test_name", "assertion"]},
-      "token_budget": 400,
-      "expect": {"must_contain": ["bug"]}
+      "token_budget": 900,
+      "expect": {"must_contain_any": ["expect(", "assert", "@Test", "assertThat", "def test"], "min_words": 12}
     },
     {
       "id": "review",
@@ -24,7 +24,7 @@
       "trigger": "Write the changelog for this release grouped by audience",
       "needs": {"review_report": ["verdict"]},
       "writes": {"changelog": ["shipped", "excluded"]},
-      "expect": {"must_contain": ["changelog", "release"]}
+      "expect": {"min_headings": 2, "min_words": 25}
     }
   ],
   "inputs": [

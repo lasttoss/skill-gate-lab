@@ -10,7 +10,7 @@ help:
 	@echo "make gate          tier 1 + tier 2 + the routing floor — the CI check"
 	@echo "make smoke         gate + a tier-3 replay run + report.html (offline)"
 	@echo "make run           tier 3 against a real executor: make run EXECUTOR_CMD='model-cli'"
-	@echo "make report        rebuild out/report.html from the last run"
+	@echo "make report        rebuild out/report.html from the last run (free)"
 	@echo "make baseline      write the routing floor to config/routing-baseline.json"
 	@echo "make compose       run the gate inside the image that ships (needs docker)"
 	@echo "make clean         remove out/ and bytecode"
@@ -28,7 +28,7 @@ run:
 	python3 -m gate.cli run --runs 3 $(if $(EXECUTOR_CMD),--executor-cmd "$(EXECUTOR_CMD)")
 
 report:
-	python3 -m gate.cli smoke --runs 2 >/dev/null && echo "wrote out/report.html"
+	python3 -m gate.cli report
 
 baseline:
 	python3 -m gate.cli baseline $(if $(MIN),--min $(MIN))

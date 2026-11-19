@@ -149,6 +149,25 @@ def _judge(step: dict, answer: dict, reason_out: list) -> str:
             reason_out.append("assert_failed")
             break
 
+    # "at least one of" exists because a literal assertion on a word the answer does
+    # not have to repeat punishes a correct answer. That mistake is recorded in
+    # docs/RESULTS.md: the real-model run failed 9/9 notes steps on it.
+    any_of = expect.get("must_contain_any", [])
+    if any_of and not any(needle.lower() in text.lower() for needle in any_of):
+        reason_out.append("assert_failed")
+
+    minimum = expect.get("min_words")
+    if minimum and len(text.split()) < minimum:
+        reason_out.append("assert_failed")
+
+    # Prose steps need a structural assertion. Asserting on a literal word punishes a
+    # correct answer that does not repeat it — the mistake is recorded in docs/RESULTS.md.
+    headings = sum(1 for line in text.splitlines()
+                   if line.lstrip().startswith(("#", "**")) or line.lstrip().startswith("- "))
+    wanted = expect.get("min_headings")
+    if wanted and headings < wanted:
+        reason_out.append("assert_failed")
+
     for needle in expect.get("must_not_contain", []):
         if needle.lower() in text.lower():
             reason_out.append("hallucinated")
@@ -182,12 +201,12 @@ def _fixture_text(root: str, names: list) -> str:
     return "\n\n".join(chunks)
 
 
-def run(root: str, flow: dict, executor, runs: int = 2) -> dict:
+def run(root: str, flow: dict, executor, runs: int = 2, out_dir: str = None) -> dict:
     prices = load_prices(root)
     model = getattr(executor, "model", executor.name)
     stamped = time.strftime("%Y%m%dT%H%M%S")
     run_id = f"{flow['name']}-{stamped}-{executor.name}"
-    run_dir = os.path.join(root, RUNS_DIR, run_id)
+    run_dir = os.path.join(out_dir or os.path.join(root, RUNS_DIR), run_id)
     os.makedirs(run_dir, exist_ok=True)
     steps_path = os.path.join(run_dir, "steps.jsonl")
 
