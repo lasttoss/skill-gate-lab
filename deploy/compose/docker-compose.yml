@@ -2,6 +2,9 @@
 #   gate   — free, deterministic, safe to run on every commit
 #   run    — spends money against a real model; profiles gate it off by default
 #
+# The container runs as the invoking host uid, or the report it writes into the
+# bind-mounted out/ lands root-owned and the next local run fails on permissions.
+#
 #   docker compose -f deploy/compose/docker-compose.yml run --rm gate
 #   docker compose -f deploy/compose/docker-compose.yml --profile paid run --rm run
 services:
@@ -10,7 +13,7 @@ services:
       context: ../..
       dockerfile: Dockerfile
     command: ["gate"]
-    user: "1000:1000"
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
     volumes:
       - ../../out:/app/out
     restart: "no"
@@ -20,7 +23,7 @@ services:
       context: ../..
       dockerfile: Dockerfile
     command: ["smoke"]
-    user: "1000:1000"
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
     volumes:
       - ../../out:/app/out
     restart: "no"
@@ -36,6 +39,6 @@ services:
       - MODEL_API_KEY=${MODEL_API_KEY:-}
     volumes:
       - ../../out:/app/out
-    user: "1000:1000"
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
     profiles: ["paid"]
     restart: "no"
